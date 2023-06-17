@@ -285,6 +285,11 @@ const StyledDeleteButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    filter: drop-shadow(0 0 1px rgb(236, 57, 57));
+    scale: 1.1;
+  }
 `;
 const StyledCheckboxWrapper = styled.div`
   display: flex;
@@ -316,6 +321,16 @@ const StyledTextarea = styled(Field)`
   max-width: 100%;
   min-height: 40px;
   min-width: 100px;
+  width: 100%;
+`;
+const StyledCounterWrapper = styled.div`
+  width: 100%;
+  position: relative;
+`;
+const StyledCounter = styled.span`
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 `;
 const StyledTextareaTip = styled.p`
   display: flex;
@@ -454,16 +469,19 @@ function FormPage({
       return (
         <StyledTextareaWrapper>
           <StyledTextareaLabel>About</StyledTextareaLabel>
-          <StyledTextarea
-            as="textarea"
-            name="about"
-            value={props.values.about}
-            onChange={props.handleChange}
-            placeholder="Placeholder"
-          />
-          <StyledTextareaTip>
-            Tip: {props.touched.about && props.errors.about}
-          </StyledTextareaTip>
+          <StyledCounterWrapper>
+            <StyledTextarea
+              as="textarea"
+              name="about"
+              value={props.values.about}
+              onChange={props.handleChange}
+              placeholder="Placeholder"
+            />
+            <StyledCounter>
+              {props.values.about.replace(/\s+/g, "").length}
+            </StyledCounter>
+          </StyledCounterWrapper>
+          <StyledTextareaTip>Tip: {props.errors.about}</StyledTextareaTip>
         </StyledTextareaWrapper>
       );
     default:
@@ -487,6 +505,10 @@ const StyledRangeCircle = styled.div<isActive>`
   position: relative;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    scale: 1.3;
+  }
   cursor: pointer;
   border-radius: 50%;
   background-color: ${({ theme, isActive }) =>

@@ -48,13 +48,10 @@ const StyledForm = styled.form`
 `;
 
 const validationSchema = Yup.object({
-  phone: Yup.string()
-    .length(18, "Неправильный формат номера")
-    .required("Обязательное поле"),
+  phone: Yup.string().length(18, "Неправильный формат номера"),
   email: Yup.string()
     .email("Неправильный формат почты")
-    .matches(/.+@.+\..+/gi, "Неправильный формат почты")
-    .required("Обязательное поле"),
+    .matches(/.+@.+\..+/gi, "Неправильный формат почты"),
 });
 
 const initialValues = { phone: "", email: "" };
@@ -74,48 +71,13 @@ function FormSection() {
         {(props) => (
           <StyledForm onSubmit={props.handleSubmit}>
             <TextInput
-              onChange={(e) => {
-                const isFirstChar = e.target.value.length === 1;
-                let value = e.target.value.slice(isFirstChar ? 0 : 4);
-                if (
-                  // React doesn't see inputType in typescript, but it does exists
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (e as any).nativeEvent.inputType === "deleteContentBackward"
-                ) {
-                  let lastCharacter = value[value.length - 1] || "";
-                  // while lastCharacter is not a number, delete it
-                  while (lastCharacter !== "" && !lastCharacter.match(/\d/)) {
-                    value = value.slice(0, -1);
-                    lastCharacter = value[value.length - 1];
-                  }
-                  props.setFieldValue("phone", "+7 (" + value);
-                  return;
-                }
-                const match = value.match(/[0-9]+/gi);
-                if (!match) {
-                  props.setFieldValue("phone", "+7 (");
-                  return;
-                }
-                const phoneNumber = match.join("");
-                const areaCode = phoneNumber.slice(0, 3);
-                const firstPart = phoneNumber.slice(3, 6);
-                const secondPart = phoneNumber.slice(6, 8);
-                const thirdPart = phoneNumber.slice(8, 10);
-                const formatted = `+7 ${
-                  areaCode
-                    ? areaCode.length === 3
-                      ? "(" + areaCode + ")"
-                      : "(" + areaCode.trim()
-                    : ""
-                }${firstPart ? " " + firstPart : ""}${
-                  secondPart ? "-" + secondPart : ""
-                }${thirdPart ? "-" + thirdPart : ""}`;
-                props.setFieldValue("phone", formatted);
-              }}
+              onChange={props.handleChange}
               onBlur={props.handleBlur}
               touched={props.touched.phone}
               value={props.values.phone}
               name="phone"
+              type="tel"
+              mask={"+7 (999) 999-99-99"}
               errors={props.errors.phone}
               placeholder="+7 (999) 999-99-99"
               labelText="Номер телефона"
@@ -128,6 +90,7 @@ function FormSection() {
               touched={props.touched.email}
               value={props.values.email}
               name="email"
+              type="email"
               labelText="Email"
               placeholder="tim.jennings@example.com"
               backgroundColor="dark"
@@ -157,6 +120,12 @@ const StyledUserImage = styled.img`
   width: 80px;
   height: 80px;
   border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    filter: brightness(120%);
+    scale: 1.1;
+    border: 3px solid ${({ theme }) => theme.colors.secondary};
+  }
 `;
 const StyledUserInfo = styled.div`
   display: flex;
@@ -184,6 +153,12 @@ const StyledUserLink = styled.a`
   gap: ${({ theme }) => theme.margin.small};
   text-decoration: none;
   font-size: ${({ theme }) => theme.font.size.extraSmall};
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    filter: brightness(80%);
+    scale: 1.1;
+    text-shadow: 0 0 1px ${({ theme }) => theme.colors.secondary};
+  }
 `;
 const StyledUserLinkIcon = styled.img`
   width: 12.6px;
@@ -221,7 +196,7 @@ function UserSection() {
                   alt=""
                   width={12.6}
                   height={11.2}
-                ></StyledUserLinkIcon>
+                />
                 GitHub
               </StyledUserLink>
             </StyledUserListItem>

@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { DefaultTheme, css } from "styled-components";
+import InputMask from "react-input-mask";
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -12,18 +13,27 @@ const StyledLabel = styled.label`
   display: flex;
   gap: 8px;
 `;
-const StyledInput = styled.input<Omit<TextInputProps, "labelText">>`
+type StyledInputProps = Omit<TextInputProps, "labelText">;
+const StyledInputCSS = ({
+  theme,
+  backgroundColor,
+}: { theme: DefaultTheme } & StyledInputProps) => css`
   padding: 0.5rem;
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-  border: 1px solid ${({ theme }) => theme.colors.border.medium};
-  background-color: ${({ theme, backgroundColor }) =>
-    backgroundColor === "light"
-      ? theme.colors.primary
-      : theme.colors.background};
+  border-radius: ${theme.borderRadius.small};
+  border: 1px solid ${theme.colors.border.medium};
+  background-color: ${backgroundColor === "light"
+    ? theme.colors.primary
+    : theme.colors.background};
   padding: 12px;
   max-width: 300px;
   width: 100%;
-  color: ${({ theme }) => theme.colors.text.placeholder};
+  color: ${theme.colors.text.placeholder};
+`;
+const StyledInput = styled.input<StyledInputProps>`
+  ${StyledInputCSS}
+`;
+const StyledMaskInput = styled(InputMask)<StyledInputProps>`
+  ${StyledInputCSS}
 `;
 const StyledTip = styled.div`
   font-size: 0.875rem;
@@ -39,7 +49,8 @@ export type TextInputProps = {
   touched?: boolean;
   noErrors?: boolean;
   noLabel?: boolean;
-} & Omit<React.ComponentPropsWithoutRef<"input">, "type">;
+  mask?: string;
+} & React.ComponentPropsWithoutRef<"input">;
 
 export default function TextInput({
   backgroundColor = "light",
@@ -48,12 +59,22 @@ export default function TextInput({
   touched,
   noErrors,
   noLabel,
+  mask,
   ...props
 }: TextInputProps) {
   return (
     <StyledWrapper>
       {noLabel ? "" : <StyledLabel htmlFor={props.id}>{labelText}</StyledLabel>}
-      <StyledInput type="text" backgroundColor={backgroundColor} {...props} />
+      {mask ? (
+        <StyledMaskInput
+          mask={mask}
+          type="text"
+          backgroundColor={backgroundColor}
+          {...props}
+        />
+      ) : (
+        <StyledInput type="text" backgroundColor={backgroundColor} {...props} />
+      )}
       {noErrors ? "" : <StyledTip>Tip: {touched && errors}</StyledTip>}
     </StyledWrapper>
   );
