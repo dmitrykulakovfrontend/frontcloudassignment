@@ -29,6 +29,10 @@ const theme: DefaultTheme = {
       large: "1.25rem",
     },
   },
+  breakpoints: {
+    phone: "450px",
+    tablet: "768px",
+  },
   colors: {
     primary: "rgb(255,255,255)",
     secondary: "rgba(85, 88, 250, 1)",

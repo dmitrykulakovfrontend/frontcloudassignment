@@ -28,7 +28,7 @@ const StyledMainWrapper = styled.div`
     calc(100% - ${({ theme }) => `${parseInt(theme.margin.medium) * 2}px`}),
     700px
   );
-  @media (max-width: 768px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: ${({ theme }) => theme.margin.medium};
   }
 `;
@@ -73,7 +73,7 @@ const StyledModal = styled.div`
   padding: ${({ theme }) => theme.margin.medium};
   align-items: center;
   gap: ${({ theme }) => theme.margin.medium};
-  @media (max-width: 768px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     width: 80%;
   }
 `;
@@ -92,6 +92,13 @@ const ErrorModalCloseButton = styled.button`
   cursor: pointer;
   height: 30px;
   color: ${({ theme }) => theme.colors.border.dark};
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    cursor: pointer;
+    filter: brightness(120%);
+    scale: 1.1;
+    box-shadow: 0 0 5px ${({ theme }) => theme.colors.border.light};
+  }
 `;
 const ErrorModalButtonWrapper = styled.div`
   width: fit-content;
@@ -173,7 +180,9 @@ export default function Form() {
           <StyledModal>
             {isSuccess ? (
               <>
-                <SuccessModalTitle>Форма успешно отправлена</SuccessModalTitle>
+                <SuccessModalTitle style={{ justifyContent: "center" }}>
+                  Форма успешно отправлена
+                </SuccessModalTitle>
                 <img
                   src={successIconSrc}
                   width={80}
@@ -196,7 +205,7 @@ export default function Form() {
                 </ErrorModalButtonWrapper>
               </>
             ) : (
-              ""
+              "Something went wrong"
             )}
           </StyledModal>
         </StyledModalWrapper>

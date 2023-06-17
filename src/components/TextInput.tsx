@@ -1,4 +1,4 @@
-import styled, { DefaultTheme, css } from "styled-components";
+import styled, { css } from "styled-components";
 import InputMask from "react-input-mask";
 
 const StyledWrapper = styled.div`
@@ -14,25 +14,32 @@ const StyledLabel = styled.label`
   gap: 8px;
 `;
 type StyledInputProps = Omit<TextInputProps, "labelText">;
-const StyledInputCSS = ({
-  theme,
-  backgroundColor,
-}: { theme: DefaultTheme } & StyledInputProps) => css`
+const StyledInputCSS = css<StyledInputProps>`
   padding: 0.5rem;
-  border-radius: ${theme.borderRadius.small};
-  border: 1px solid ${theme.colors.border.medium};
-  background-color: ${backgroundColor === "light"
-    ? theme.colors.primary
-    : theme.colors.background};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  border: 1px solid ${({ theme }) => theme.colors.border.medium};
+  background-color: ${({ theme, backgroundColor }) =>
+    backgroundColor === "light"
+      ? theme.colors.primary
+      : theme.colors.background};
   padding: 12px;
   max-width: 300px;
   width: 100%;
-  color: ${theme.colors.text.placeholder};
+  color: ${({ theme }) => theme.colors.text.placeholder};
 `;
-const StyledInput = styled.input<StyledInputProps>`
+// destructuring backgroundColor to not allow appear it on the actual html element
+const StyledInput = styled(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ({ backgroundColor, ...props }: StyledInputProps) => <input {...props} />
+)<StyledInputProps>`
   ${StyledInputCSS}
 `;
-const StyledMaskInput = styled(InputMask)<StyledInputProps>`
+const StyledMaskInput = styled(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ({ backgroundColor, mask = "", ...props }: StyledInputProps) => (
+    <InputMask mask={mask} {...props} />
+  )
+)<StyledInputProps>`
   ${StyledInputCSS}
 `;
 const StyledTip = styled.div`

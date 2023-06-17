@@ -8,6 +8,11 @@ declare module "styled-components" {
       large: string;
     };
 
+    breakpoints: {
+      phone: string;
+      tablet: string;
+    };
+
     font: {
       size: {
         extraSmall: string;

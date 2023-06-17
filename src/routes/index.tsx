@@ -139,6 +139,9 @@ const StyledUserLinksList = styled.ul`
   list-style-type: none;
   display: flex;
   flex-wrap: wrap;
+  @media (max-width: ${({ theme }) => theme.breakpoints.phone}) {
+    flex-direction: column;
+  }
   gap: 18px;
 `;
 const StyledUserName = styled.p`
