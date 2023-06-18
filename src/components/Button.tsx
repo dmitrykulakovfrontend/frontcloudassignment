@@ -32,7 +32,8 @@ const StyledButtonCSS = ({
     ? `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`
     : ""};
   transition: all 0.2s ease-in-out;
-  &:hover {
+  &:hover,
+  &:focus {
     cursor: pointer;
     filter: brightness(120%);
     scale: 1.1;

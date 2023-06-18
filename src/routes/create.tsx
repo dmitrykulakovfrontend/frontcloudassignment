@@ -9,6 +9,7 @@ import Select from "../components/Select";
 import deleteIconSrc from "../assets/icons/trashcan.png";
 import successIconSrc from "../assets/icons/success.png";
 import errorIconSrc from "../assets/icons/error.png";
+import useModal, { Modal } from "../hooks/useModal";
 
 const StyledMainWrapper = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius};
@@ -48,34 +49,6 @@ const StyledControls = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.margin.medium};
   margin-top: ${({ theme }) => theme.margin.medium};
-`;
-const StyledModalWrapper = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background-color: ${({ theme }) => theme.colors.border.dark};
-`;
-const StyledModal = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  width: 50%;
-  height: 50%;
-  background-color: ${({ theme }) => theme.colors.primary};
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: ${({ theme }) => theme.margin.medium};
-  align-items: center;
-  gap: ${({ theme }) => theme.margin.medium};
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    width: 80%;
-  }
 `;
 const SuccessModalTitle = styled.p`
   display: flex;
@@ -126,7 +99,7 @@ const initialValues = {
   nickName: "",
   name: "",
   sername: "",
-  sex: "",
+  sex: "man",
   advantages: ["", "", ""],
   checkbox: [""],
   radio: "1",
@@ -136,7 +109,7 @@ const initialValues = {
 export default function Form() {
   const location = useLocation();
   const [page, setPage] = useState(1);
-  const [isModalActive, setModalActive] = useState(false);
+  const { closeModal, modal, openModal } = useModal();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const { phone, email } = location.state;
@@ -168,48 +141,39 @@ export default function Form() {
     } else {
       setIsError(true);
     }
-    setModalActive(true);
+    openModal();
   };
 
   if (!location.state) return <Navigate to={"/"} />;
 
   return (
     <StyledMainWrapper>
-      {isModalActive && (
-        <StyledModalWrapper onClick={() => setModalActive(false)}>
-          <StyledModal>
-            {isSuccess ? (
-              <>
-                <SuccessModalTitle style={{ justifyContent: "center" }}>
-                  Форма успешно отправлена
-                </SuccessModalTitle>
-                <img
-                  src={successIconSrc}
-                  width={80}
-                  height={80}
-                  alt="success"
-                />
-                <Button to="/">На главную</Button>
-              </>
-            ) : isError ? (
-              <>
-                <SuccessModalTitle>
-                  Ошибка
-                  <ErrorModalCloseButton onClick={() => setModalActive(false)}>
-                    X
-                  </ErrorModalCloseButton>
-                </SuccessModalTitle>
-                <img src={errorIconSrc} width={80} height={80} alt="error" />
-                <ErrorModalButtonWrapper>
-                  <Button>Закрыть</Button>
-                </ErrorModalButtonWrapper>
-              </>
-            ) : (
-              "Something went wrong"
-            )}
-          </StyledModal>
-        </StyledModalWrapper>
-      )}
+      <Modal modalMeta={modal}>
+        {isSuccess ? (
+          <>
+            <SuccessModalTitle style={{ justifyContent: "center" }}>
+              Форма успешно отправлена
+            </SuccessModalTitle>
+            <img src={successIconSrc} width={80} height={80} alt="success" />
+            <Button to="/">На главную</Button>
+          </>
+        ) : isError ? (
+          <>
+            <SuccessModalTitle>
+              Ошибка
+              <ErrorModalCloseButton onClick={closeModal}>
+                X
+              </ErrorModalCloseButton>
+            </SuccessModalTitle>
+            <img src={errorIconSrc} width={80} height={80} alt="error" />
+            <ErrorModalButtonWrapper>
+              <Button onClick={closeModal}>Закрыть</Button>
+            </ErrorModalButtonWrapper>
+          </>
+        ) : (
+          "Something went wrong"
+        )}
+      </Modal>
       <RangePage page={page} setPage={setPage} />
 
       <StyledFormWrapper>
@@ -397,9 +361,6 @@ function FormPage({
             errors={props.errors.sex}
             id="field-sex"
           >
-            <option value={""} disabled>
-              Не выбрано
-            </option>
             <option value="man">Man</option>
             <option value="woman">Woman</option>
           </Select>
@@ -506,7 +467,7 @@ const StyledRangeWrapper = styled.div`
   justify-content: center;
   margin-bottom: ${({ theme }) => theme.margin.medium};
 `;
-const StyledRangeCircle = styled.div<isActive>`
+const StyledRangeCircle = styled.button<isActive>`
   width: 16px;
   height: 16px;
   scale: 1.1;
@@ -515,8 +476,11 @@ const StyledRangeCircle = styled.div<isActive>`
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease-in-out;
-  &:hover {
-    scale: 1.3;
+  border: none;
+  &:hover,
+  &:focus {
+    scale: 1.4;
+    outline: none;
   }
   cursor: pointer;
   border-radius: 50%;
